@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restaurante Árabe - Sabor do Oriente</title>
+  <style>
+    /* Reset and base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: #fff8f0;
+      color: #3b1a00;
+      min-height: 100vh;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    /* Layout */
+    header {
+      background: linear-gradient(90deg, #b91c1c, #f7b330);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .logo {
+      font-family: 'Cairo', Arial, sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-shadow: 1px 1px 3px #672200;
+      user-select: none;
+    }
+    nav button, nav .btn-cart {
+      background: #facc15;
+      color: #b91c1c;
+      padding: 0.5rem 1.2rem;
+      margin-left: 1rem;
+      font-size: 1rem;
+      box-shadow: 0 2px 7px rgb(249 202 36 / 0.6);
+      border-radius: 30px;
+      font-weight: 700;
+    }
+    nav button:hover, nav .btn-cart:hover {
+      background: #eab308;
+      box-shadow: 0 3px 10px rgb(234 179 8 / 0.8);
+    }
+    main {
+      max-width: 1100px;
+      margin: 2rem auto 4rem;
+      padding: 0 1rem;
+    }
+    .banner {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 15px rgb(185 28 28 / 0.6);
+      margin-bottom: 2rem;
+    }
+    .banner img {
+      width: 100%;
+      display: block;
+      max-height: 300px;
+      object-fit: cover;
+      filter: brightness(92%);
+      transition: filter 0.3s ease;
+    }
+    .banner:hover img {
+      filter: brightness(100%);
+    }
+    .banner-text {
+      position: absolute;
+      bottom: 1.8rem;
+      left: 2rem;
+      color: #ffecb3;
+      text-shadow: 2px 2px 5px #7f1d1d;
+      font-size: 2.4rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      font-family: 'Cairo', sans-serif;
+    }
+    section.menu {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px, 1fr));
+      gap: 1.7rem;
+    }
+    article.dish {
+      background: #fff1dc;
+      border-radius: 15px;
+      box-shadow: 0 3px 12px rgb(184 28 28 / 0.2);
+      padding: 1rem 1.2rem 1.6rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease;
+    }
+    article.dish:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 7px 16px rgb(184 28 28 / 0.4);
+    }
+    .dish img {
+      width: 100%;
+      height: 170px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+    .dish h3 {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+      color: #b91c1c;
+      letter-spacing: 0.05em;
+    }
+    .dish p.description {
+      font-size: 0.9rem;
+      color: #5c3b1f;
+      flex-grow: 1;
+      margin-bottom: 1rem;
+      line-height: 1.3em;
+    }
+    .dish .price {
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #b91c1c;
+      margin-bottom: 0.8rem;
+      font-family: 'Cairo', sans-serif;
+    }
+    .dish button.add-btn {
+      background: #b91c1c;
+      color: #ffecb3;
+      padding: 0.5rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-shadow: 0 3px 7px #9a1616;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+    .dish button.add-btn:hover {
+      background: #7f1414;
+      box-shadow: 0 4px 10px #700f0f;
+    }
+    /* Cart styles */
+    .cart {
+      position: fixed;
+      top: 70px;
+      right: 1rem;
+      width: 320px;
+      max-height: 80vh;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 2px 4px 12px rgba(185,28,28,0.7);
+      padding: 1rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(110%);
+      transition: transform 0.3s ease;
+      z-index: 1100;
+    }
+    .cart.active {
+      transform: translateX(0);
+    }
+    .cart-header {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      color: #b91c1c;
+      margin-bottom: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-header button.close-cart {
+      background: transparent;
+      font-size: 1.2rem;
+      color: #b91c1c;
+      cursor: pointer;
+      border: none;
+      font-weight: 900;
+      user-select: none;
+      transition: color 0.2s ease;
+    }
+    .cart-header button.close-cart:hover {
+      color: #7f1414;
+    }
+    .cart-items {
+      overflow-y: auto;
+      flex-grow: 1;
+      margin-bottom: 0.8rem;
+      padding-right: 4px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f3b22e;
+      padding: 6px 0;
+      font-size: 0.9rem;
+      color: #5c3b1f;
+      user-select: none;
+    }
+    .cart-item-name {
+      flex-grow: 1;
+      margin-right: 5px;
+      font-weight: 700;
+    }
+    .cart-item-qty {
+      background: #facc15;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-right: 8px;
+      font-weight: 600;
+      color: #b91c1c;
+      min-width: 22px;
+      text-align: center;
+    }
+    .cart-total {
+      font-weight: 900;
+      font-size: 1.15rem;
+      color: #b91c1c;
+      text-align: right;
+    }
+    .cart-checkout {
+      background: #b91c1c;
+      color: #ffecb3;
+      font-weight: 700;
+      padding: 0.7rem 0;
+      margin-top: 0.7rem;
+      border-radius: 30px;
+      box-shadow: 0 4px 10px #7f1414;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .cart-checkout:hover:not(:disabled) {
+      background: #7f1414;
+      box-shadow: 0 6px 14px #4a0a0a;
+    }
+    .cart-checkout:disabled {
+      background: #f3b22e;
+      color: #7c4704;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    /* Login modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1200;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal {
+      background: #fff8f0;
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(185, 28, 28, 0.7);
+      width: 320px;
+      max-width: 90vw;
+      position: relative;
+      font-family: 'Cairo', sans-serif;
+    }
+    .modal h2 {
+      color: #b91c1c;
+      margin-bottom: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+    }
+    .modal label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.3rem;
+      display: block;
+      color: #7f1d1d;
+    }
+    .modal input[type="text"], .modal input[type="password"] {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border: 2px solid #facc15;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      outline-offset: 2px;
+      transition: border-color 0.25s ease;
+    }
+    .modal input[type="text"]:focus, .modal input[type="password"]:focus {
+      border-color: #b91c1c;
+      box-shadow: 0 0 5px #b91c1caa;
+    }
+    .modal button.submit-btn {
+      width: 100%;
+      padding: 0.7rem;
+      background: #b91c1c;
+      color: #ffecb3;
+      font-weight: 800;
+      border-radius: 30px;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 12px #7f1414;
+      transition: background-color 0.3s ease;
+    }
+    .modal button.submit-btn:hover {
+      background: #7f1414;
+      box-shadow: 0 6px 15px #4a0a0a;
+    }
+    .modal button.close-modal {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 1.4rem;
+      color: #b91c1c;
+      background: transparent;
+      border: none;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.25s ease;
+    }
+    .modal button.close-modal:hover {
+      color: #7f1414;
+    }
+    /* Success message */
+    .alert {
+      position: fixed;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #facc15;
+      color: #7c4704;
+      font-weight: 700;
+      padding: 0.7rem 1.5rem;
+      border-radius: 30px;
+      box-shadow: 0 3px 10px #965a04cc;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      user-select: none;
+      z-index: 1300;
+    }
+    .alert.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* Responsive typography */
+    @media (max-width: 480px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      nav button, nav .btn-cart {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        padding: 0.6rem 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-label="Logo Restaurante Árabe">Sabor do Oriente</div>
+    <nav>
+      <button id="btn-login" aria-haspopup="dialog" aria-controls="login-modal" aria-expanded="false">Login</button>
+      <button id="btn-cart" class="btn-cart" aria-label="Ver carrinho de compras">Carrinho (0)</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="banner" aria-label="Banner promocional">
+      <img src="https://images.unsplash.com/photo-1601924582971-7a5d7aac96dd?auto=format&fit=crop&w=1500&q=80" alt="Mesa com comida árabe tradicional decorada" />
+      <div class="banner-text">Delícias da culinária árabe - frescor e sabor!</div>
+    </section>
+
+    <section class="menu" aria-label="Menu de pratos árabes">
+      <!-- Pratos serão carregados via JavaScript -->
+    </section>
+  </main>
+
+  <aside class="cart" aria-label="Carrinho de compras" aria-live="polite" aria-atomic="true" aria-relevant="additions removals">
+    <div class="cart-header">
+      <span>Carrinho</span>
+      <button class="close-cart" aria-label="Fechar carrinho">&times;</button>
+    </div>
+    <div class="cart-items"></div>
+    <div class="cart-total">Total: R$ 0,00</div>
+    <button class="cart-checkout" disabled>Finalizar Pedido</button>
+  </aside>
+
+  <div id="login-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="login-title" tabindex="-1">
+    <div class="modal">
+      <button class="close-modal" aria-label="Fechar modal">&times;</button>
+      <h2 id="login-title">Entrar no Sistema</h2>
+      <form id="login-form" novalidate>
+        <label for="username">Usuário</label>
+        <input type="text" id="username" name="username" required autocomplete="username" aria-required="true" />
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" aria-required="true" />
+        <button type="submit" class="submit-btn">Entrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="alert" role="alert" aria-live="assertive"></div>
+
+  <script>
+    // Dados dos pratos árabes
+    const dishes = [
+      {
+        id: 1,
+        name: "Esfiha de Carne",
+        description: "Sabor tradicional com carne temperada e massa leve e crocante.",
+        price: 12.50,
+        image: "https://images.unsplash.com/photo-1607736950104-68efe1164776?auto=format&fit=crop&w=400&q=70"
+      },
+      {
+        id: 2,
+        name: "Kibe Frito",
+        description: "Bolinho frito recheado com carne moída, temperos e hortelã fresca.",
+        price: 15.00,
+        image: "https://images.unsplash.com/photo-1576765607926-3c4f7c479a74?auto=format&fit=crop&w=400&q=70"
+      },
+      {
+        id: 3,
+        name: "Tabule",
+        description: "Salada fresca de trigo para quibe, tomate, pepino, salsa e hortelã.",
+        price: 18.00,
+        image: "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=400&q=70"
+      },
+      {
+        id: 4,
+        name: "Homus",
+        description: "Pasta de grão de bico com tahine, limão e alho, acompanhada de pão sírio.",
+        price: 11.00,
+        image: "https://images.unsplash.com/photo-1562967916-eb82221dfb25?auto=format&fit=crop&w=400&q=70"
+      },
+      {
+        id: 5,
+        name: "Camarão com Damasco",
+        description: "Campeonato de sabores árabes com toque doce dos damascos.",
+        price: 32.00,
+        image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=400&q=70"
+      },
+      {
+        id: 6,
+        name: "Arroz com Lentilha",
+        description: "Combinação perfeita, tradicional e nutritiva que acompanha todos os pratos.",
+        price: 13.50,
+        image: "https://images.unsplash.com/photo-1611080605151-03d3da8d6f9b?auto=format&fit=crop&w=400&q=70"
+      }
+    ];
+
+    // Estado do carrinho
+    const cart = {};
+
+    // Referências DOM
+    const menuSection = document.querySelector('section.menu');
+    const cartAside = document.querySelector('.cart');
+    const btnCart = document.getElementById('btn-cart');
+    const cartItemsContainer = cartAside.querySelector('.cart-items');
+    const cartTotalDisplay = cartAside.querySelector('.cart-total');
+    const btnCheckout = cartAside.querySelector('.cart-checkout');
+    const btnCloseCart = cartAside.querySelector('.close-cart');
+    const loginModal = document.getElementById('login-modal');
+    const btnLogin = document.getElementById('btn-login');
+    const btnCloseModal = loginModal.querySelector('.close-modal');
+    const loginForm = document.getElementById('login-form');
+    const alertBox = document.querySelector('.alert');
+
+    // Função para formatar preço em reais
+    function formatPrice(price) {
+      return price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    // Renderiza os pratos no menu
+    function renderMenu() {
+      menuSection.innerHTML = '';
+      dishes.forEach(dish => {
+        const dishEl = document.createElement('article');
+        dishEl.className = 'dish';
+        dishEl.innerHTML = `
+          <img src="${dish.image}" alt="Foto do prato: ${dish.name}" loading="lazy" />
+          <h3>${dish.name}</h3>
+          <p class="description">${dish.description}</p>
+          <div class="price">${formatPrice(dish.price)}</div>
+          <button class="add-btn" aria-label="Adicionar ${dish.name} ao carrinho" data-id="${dish.id}">Adicionar</button>
+        `;
+        menuSection.appendChild(dishEl);
+      });
+    }
+
+    // Atualiza o contador no botão de carrinho
+    function updateCartCount() {
+      const count = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+      btnCart.textContent = `Carrinho (${count})`;
+    }
+
+    // Atualiza o conteúdo do carrinho
+    function renderCart() {
+      cartItemsContainer.innerHTML = '';
+      const items = Object.values(cart);
+      if (items.length === 0) {
+        cartItemsContainer.innerHTML = '<p>Nenhum item no carrinho.</p>';
+        cartTotalDisplay.textContent = 'Total: R$ 0,00';
+        btnCheckout.disabled = true;
+        return;
+      }
+      let total = 0;
+      items.forEach(({id, name, price, qty}) => {
+        total += price * qty;
+        const itemEl = document.createElement('div');
+        itemEl.className = 'cart-item';
+        itemEl.innerHTML = `
+          <span class="cart-item-name">${name}</span>
+          <span class="cart-item-qty" aria-label="Quantidade de ${name} no carrinho">${qty}</span>
+          <button aria-label="Remover um ${name} do carrinho" data-id="${id}" class="btn-remove" title="Remover um">−</button>
+          <button aria-label="Adicionar um ${name} ao carrinho" data-id="${id}" class="btn-add" title="Adicionar um">+</button>
+        `;
+        cartItemsContainer.appendChild(itemEl);
+      });
+      cartTotalDisplay.textContent = `Total: ${formatPrice(total)}`;
+      btnCheckout.disabled = false;
+    }
+
+    // Adiciona prato ao carrinho
+    function addToCart(id) {
+      const dish = dishes.find(d => d.id === id);
+      if (!dish) return;
+      if (!cart[id]) {
+        cart[id] = {id: dish.id, name: dish.name, price: dish.price, qty: 1};
+      } else {
+        cart[id].qty++;
+      }
+      updateCartCount();
+      renderCart();
+      showAlert(`Adicionado ${dish.name} ao carrinho.`);
+    }
+
+    // Remove uma unidade do carrinho
+    function removeFromCart(id) {
+      if (!cart[id]) return;
+      cart[id].qty--;
+      if (cart[id].qty <= 0) {
+        delete cart[id];
+      }
+      updateCartCount();
+      renderCart();
+    }
+
+    // Mostra o alert de forma temporária
+    function showAlert(message) {
+      alertBox.textContent = message;
+      alertBox.classList.add('show');
+      setTimeout(() => {
+        alertBox.classList.remove('show');
+      }, 2200);
+    }
+
+    // Mostrar/ocultar carrinho
+    function toggleCart() {
+      cartAside.classList.toggle('active');
+      if (cartAside.classList.contains('active')) {
+        cartAside.focus();
+      }
+    }
+
+    // Mostrar login modal
+    function openLogin() {
+      loginModal.classList.add('active');
+      loginModal.setAttribute('aria-expanded', 'true');
+      btnLogin.setAttribute('aria-expanded', 'true');
+      loginModal.querySelector('#username').focus();
+    }
+
+    // Fechar login modal
+    function closeLogin() {
+      loginModal.classList.remove('active');
+      loginModal.setAttribute('aria-expanded', 'false');
+      btnLogin.setAttribute('aria-expanded', 'false');
+      btnLogin.focus();
+    }
+
+    // Validação simples de login
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = loginForm.username.value.trim();
+      const password = loginForm.password.value.trim();
+      // Dummy credential check
+      if (username === 'admin' && password === '123456') {
+        closeLogin();
+        showAlert('Login efetuado com sucesso!');
+        btnLogin.textContent = `Olá, ${username}`;
+        btnLogin.disabled = true;
+      } else {
+        alert('Usuário ou senha inválidos. Use: admin / 123456');
+        loginForm.password.value = '';
+        loginForm.password.focus();
+      }
+    }
+
+    // Eventos Delegados
+    document.body.addEventListener('click', e => {
+      if (e.target.matches('button.add-btn')) {
+        const id = +e.target.dataset.id;
+        addToCart(id);
+      }
+      if (e.target.matches('#btn-cart')) {
+        toggleCart();
+      }
+      if (e.target.matches('.close-cart')) {
+        toggleCart();
+      }
+      if (e.target.matches('.btn-remove')) {
+        const id = +e.target.dataset.id;
+        removeFromCart(id);
+      }
+      if (e.target.matches('.btn-add')) {
+        const id = +e.target.dataset.id;
+        addToCart(id);
+      }
+      if (e.target.matches('#btn-login')) {
+        openLogin();
+      }
+      if (e.target.matches('.close-modal')) {
+        closeLogin();
+      }
+      if (e.target.matches('.cart-checkout')) {
+        if (btnCheckout.disabled) return;
+        alert('Pedido finalizado! Obrigado pela preferência :)');
+        // Limpar carrinho depois do checkout
+        Object.keys(cart).forEach(id => delete cart[id]);
+        updateCartCount();
+        renderCart();
+        toggleCart();
+      }
+    });
+    // Fechar modal pelo ESC
+    document.addEventListener('keydown', e => {
+      if(e.key === 'Escape') {
+        if(loginModal.classList.contains('active')) closeLogin();
+        if(cartAside.classList.contains('active')) toggleCart();
+      }
+    });
+    // Submit login form
+    loginForm.addEventListener('submit', handleLogin);
+
+    // Inicialização da página
+    renderMenu();
+    updateCartCount();
+    renderCart();
+  </script>
+</body>
+</html>
+
+s
